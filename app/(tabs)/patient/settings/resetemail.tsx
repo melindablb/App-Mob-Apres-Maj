@@ -128,7 +128,7 @@ export default function PasswordResetScreen(): React.ReactElement {
 
     try {
       const formData = new FormData()
-      formData.append("phonenumber", "NUM YOUSRA")
+      formData.append("phonenumber", "+213556319616")
       formData.append("code", otpCode)
 
       const jsonData = JSON.stringify(formData)
