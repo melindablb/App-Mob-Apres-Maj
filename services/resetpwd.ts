@@ -22,4 +22,12 @@ export const NewPwd = (data : FormData) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-}
+};
+
+export const NewPwdALT = (data : FormData) => {
+  return api.post('/passwrodreset/nvmdpALT', data, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+};

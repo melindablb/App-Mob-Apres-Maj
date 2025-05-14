@@ -67,7 +67,7 @@ export default function Settings() {
 
             <TouchableOpacity 
               style={styles.settingItem}
-              onPress={() => router.push("../settings/changemail")}
+              onPress={() => router.push("../settings/resetemail")}
             >
               <Image source={icons.mail} style={styles.icons} />
               <Text style={styles.settingText}>Change Email</Text>

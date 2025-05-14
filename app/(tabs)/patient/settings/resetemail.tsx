@@ -1,14 +1,13 @@
 "use client"
 import icons from "@/constants/icons"
-import { ResetPwd, ResetPwdCode } from "@/services/resetpwd"
-import AsyncStorage from "@react-native-async-storage/async-storage"
+import { useAuth } from "@/contexts/AuthContext"
+import { ResetEmail, ResetEmailCode } from "@/services/resetmail"
 import { useFonts } from "expo-font"
 import { useRouter } from "expo-router"
 import type React from "react"
 import { useRef, useState } from "react"
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -18,16 +17,16 @@ import {
   TouchableOpacity,
   View,
   type NativeSyntheticEvent,
-  type TextInputKeyPressEventData,
+  type TextInputKeyPressEventData
 } from "react-native"
 
 export default function PasswordResetScreen(): React.ReactElement {
   const [fontsLoaded] = useFonts({
-    "Montserrat-Thin": require("../../assets/fonts/Montserrat/static/Montserrat-Thin.ttf"),
-    "Montserrat-Regular": require("../../assets/fonts/Montserrat/static/Montserrat-Regular.ttf"),
-    "Montserrat-SemiBold": require("../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf"),
-    "Montserrat-Medium": require("../../assets/fonts/Montserrat/static/Montserrat-Medium.ttf"),
-  })
+         "Montserrat-Thin": require("../../../../assets/fonts/Montserrat/static/Montserrat-Thin.ttf"),
+         "Montserrat-SemiBold": require("../../../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf"),
+         "Montserrat-Medium": require("../../../../assets/fonts/Montserrat/static/Montserrat-Medium.ttf"),
+         'Montserrat-Regular': require('../../../../assets/fonts/Montserrat/static/Montserrat-Regular.ttf'),
+       });
 
   const router = useRouter()
 
@@ -39,6 +38,7 @@ export default function PasswordResetScreen(): React.ReactElement {
   const [showOtpInput, setShowOtpInput] = useState<boolean>(false)
   const [generatedCode, setGeneratedCode] = useState<string>("")
   const [category, setCategory] = useState<string>("")
+ const { user, UpdateData } = useAuth();
 
   // Create refs for OTP inputs
   const inputRefs = useRef<Array<TextInput | null>>([])
@@ -80,7 +80,7 @@ export default function PasswordResetScreen(): React.ReactElement {
 
   // FIXME: request reset
   const handleRequestReset = async (): Promise<void> => {
-    if (!email) {
+    /* if (!email) {
       setError("Please enter your email address")
       return
     }
@@ -88,31 +88,27 @@ export default function PasswordResetScreen(): React.ReactElement {
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address")
       return
-    }
-
-    if (!category) {
-      setError("Please select a category")
-      return
-    }
+    } */
 
     setLoading(true)
     setError("")
-
+    
     try {
       const formData = new FormData();
-      formData.append("Email", email)
-      formData.append("Role",category)
+      formData.append("id", user?.uid || "");
+      formData.append("role","10")
 
       const jsonData = JSON.stringify(formData)
       console.log(jsonData)
       
-      const response = await ResetPwd(formData);
+      const response = await ResetEmail(formData);
       
-      setSuccess("A 6-digit code has been sent to your email")
+      setSuccess("A 6-digit code has been sent to your Phone Number")
       setShowOtpInput(true)
       
       
     } catch (err) {
+        console.log(err)
       setError("Failed to send reset code")
     } finally {
       setLoading(false)
@@ -132,27 +128,16 @@ export default function PasswordResetScreen(): React.ReactElement {
 
     try {
       const formData = new FormData()
-      formData.append("Email", email)
-      formData.append("Code", otpCode)
+      formData.append("phonenumber", "NUM YOUSRA")
+      formData.append("code", otpCode)
 
       const jsonData = JSON.stringify(formData)
       console.log(jsonData)
 
-      const response = await ResetPwdCode(formData);
-
+      const response = await ResetEmailCode(formData);
+    
       if(response.status===200){
-         //redirection
-         try {
-          const data = {
-            roleALT: category,
-            mailALT: email,
-          };
-          await AsyncStorage.setItem('pwdtemp', JSON.stringify(data));
-          router.replace("./newpwdALT");
-        } catch (e) {
-          console.log('Erreur lors du stockage :', e);
-          Alert.alert("Error","An error has occured. Please try again.")
-        }
+         router.replace("./changemail");
       }
       else{
         throw new Error("Invalid code. Please try again.")
@@ -193,58 +178,16 @@ export default function PasswordResetScreen(): React.ReactElement {
         </Text>
       </View>
       <View style={styles.content}>
-        <Text style={styles.title2}>Reset Password</Text>
+        <Text style={styles.title2}>Reset Email</Text>
         <Text style={styles.subtitle}>
-          {!showOtpInput ? "Enter your email to receive a reset code" : "Enter the 6-digit code sent to your email"}
+          {!showOtpInput ? "You will receive a 6-digit code in your Phone Number." : "Enter the 6-digit code sent to your email"}
         </Text>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         {success ? <Text style={styles.successText}>{success}</Text> : null}
 
-        {/* Only show category selection when not showing OTP input */}
-        {!showOtpInput && (
-          <>
-            <Text style={styles.label}>Category</Text>
-            <View style={styles.categoryContainer}>
-              <TouchableOpacity
-                style={[styles.categoryButton, category === "10" && styles.categoryButtonSelected]}
-                onPress={() => setCategory("10")}
-              >
-                <Text style={[styles.categoryButtonText, category === "10" && styles.categoryButtonTextSelected]}>
-                  Patient
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.categoryButton, category === "20" && styles.categoryButtonSelected]}
-                onPress={() => setCategory("20")}
-              >
-                <Text
-                  style={[
-                    styles.categoryButtonText,
-                    category === "20" && styles.categoryButtonTextSelected,
-                  ]}
-                >
-                  Healthcare Pro
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </>
-        )}
-
         {!showOtpInput ? (
           <View style={styles.formContainer}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter your email address"
-              placeholderTextColor={"grey"}
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
 
             <TouchableOpacity style={styles.button} onPress={handleRequestReset} disabled={loading}>
               {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Send Reset Code</Text>}
@@ -277,30 +220,7 @@ export default function PasswordResetScreen(): React.ReactElement {
         )}
       </View>
 
-      <TouchableOpacity
-        style={{
-          position:"relative",
-          top:"15%",
-          alignSelf: "center",
-        }}
-        activeOpacity={0.8}
-        onPress={() => router.back()}
-      >
-        
-        <Text
-          style={{
-            fontSize: 20,
-            fontFamily: "Montserrat-SemiBold",
-            color: "#F05050",
-            textAlign: "center",
-            textShadowColor: "rgba(0, 0, 0, 0.30)",
-            textShadowOffset: { width: 0, height: 0.1 },
-            textShadowRadius: 4,
-          }}
-        >
-          Go Back
-        </Text>
-      </TouchableOpacity>
+     
     </KeyboardAvoidingView>
   )
 }
@@ -316,6 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 10,
     borderWidth: 0.7,
+    marginTop:"10%",
     borderColor: "#9C9C9C",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -325,13 +246,14 @@ const styles = StyleSheet.create({
   },
   title2: {
     fontFamily: "Montserrat-SemiBold",
-    fontSize: 32,
+    fontSize: 29,
     color: "#F05050",
     marginBottom: "3%",
     textShadowColor: "rgba(0, 0, 0,0.35)",
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
     alignSelf: "center",
+    textAlign:"center",
   },
   title: {
     fontSize: 24,

@@ -1,11 +1,11 @@
 import icons from "@/constants/icons";
-import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { NewEmail } from "@/services/resetmail";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from "react-native";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://your-api-endpoint";
 
 export default function ChangeEmail(){
     const [fontsLoaded] = useFonts({
@@ -15,44 +15,58 @@ export default function ChangeEmail(){
     });
 
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [newmail, setnewmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error,seterror]=useState<string | null>(null);
+  const { user, UpdateData } = useAuth();
 
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/user/profile`);
-        if (response.status === 200) {
-          setEmail(response.data.email);
-          setPhoneNumber(response.data.phoneNumber);
-        }
-      } catch (error) {
-        console.error("Failed to fetch user info:", error);
-      }
-    };
-
-    fetchUserInfo();
-  }, []);
+   useEffect(() => {
+     setEmail(user?.email || "");
+   }, [user]);
 
   if (!fontsLoaded) return null;
 
   const handleSave = async () => {
     if (!email.includes("@")) {
-      Alert.alert("Error", "Please enter a valid email address.");
+      seterror("Please enter a valid email address.");
       return;
     }
-
+    seterror(null);
     setLoading(true);
     try {
-      const response = await axios.put(`${API_URL}/user/email`, { email });
+      //appel api
+      const formData = new FormData();
+      formData.append("id", user?.uid || "");
+      formData.append("role","10");
+      formData.append("newEmail", newmail);
 
-      if (response.status === 200) {
-        Alert.alert("Success", "Email updated successfully.");
-        router.back();
-      } else {
-        Alert.alert("Error", "Failed to update email.");
+      const response = await NewEmail(formData);
+      const userupd ={
+        uid: user?.uid || "",
+        token: user?.token || "",
+        name: user?.name || "",
+        lastname: user?.lastname || "",
+        email: newmail,
+        height: user?.height || "",
+        weight: user?.weight || "",
+        phonenumber: user?.phonenumber || "",
+        postalcode: user?.postalcode || "",
+        address: user?.address || "",
+        birthdate: user?.birthdate || "",
+        pdp : user?.pdp || "",        
       }
-    } catch (error) {
+      setEmail(newmail);
+      UpdateData(userupd);
+      Alert.alert(
+                    "Success",
+                    "Email updated successfully.",
+                    [{ text: "OK", onPress: () => router.back() }]);
+
+    } catch (errorr:any) {
+      if(errorr.status == 409) {
+        seterror("This email address is already taken.");
+        return;
+      }
       console.error("Error updating email:", error);
       Alert.alert("Error", "Could not update email.");
     } finally {
@@ -79,21 +93,29 @@ export default function ChangeEmail(){
             </View>
 
             <View style={styles.section}>
-              <Text style={styles.label}>Email Address</Text>
+              <Text style={styles.label}>Old Email Address</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input,{color:"gray"}]}
                 value={email}
                 editable={false}
+                keyboardType="email-address"
               />
-
+              {error && (
+                            <Text style={{ marginTop:"2%",
+                              marginLeft:"2%",
+                              color: "red",
+                              fontFamily: "Montserrat-Regular",}}>
+                              {error}
+                            </Text>
+                          )}
             </View>
 
             <View style={styles.section}>
               <Text style={styles.label}>New Email Adress</Text>
               <TextInput
                 style={styles.input}
-                value={phoneNumber}
-                editable={false}
+                value={newmail}
+                onChangeText={setnewmail}
               />
             </View>
 
@@ -159,8 +181,8 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     paddingHorizontal: 15,
     backgroundColor: "white",
-    fontFamily: "Montserrat-Medium",
-    fontSize: 14,
+    fontFamily: "Montserrat-Regular",
+    fontSize: 18,
     elevation: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
