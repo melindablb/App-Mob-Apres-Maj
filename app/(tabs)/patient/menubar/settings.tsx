@@ -1,5 +1,6 @@
 import icons from "@/constants/icons";
 import { useAuth } from "@/contexts/AuthContext";
+import { LogOut } from "@/services/auth";
 import { useFonts } from 'expo-font';
 import { router } from "expo-router";
 import React, { useState } from "react";
@@ -27,6 +28,12 @@ export default function Settings() {
   const handleLogout = async () => {
     try {
       //FIXME: logout avec le contexte
+      setLoading(true);
+      const formData = new FormData();
+      formData.append("Id", user?.uid || "");
+      formData.append("Role", "10");
+      const response = await LogOut(formData);
+      setLoading(false);
       signOutD();
       router.replace("../../welcome");
     } catch (error) {

@@ -32,3 +32,11 @@ export const signinProS = (data : FormData) => {
       },
     });
 }
+
+export const LogOut = (data : FormData) => {
+    return api.post('/auth/Logout', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+}

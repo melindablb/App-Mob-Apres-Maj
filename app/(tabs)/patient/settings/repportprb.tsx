@@ -1,11 +1,11 @@
 import icons from "@/constants/icons";
-import axios from "axios";
+import { useAuth } from "@/contexts/AuthContext";
+import { SendHelp } from "@/services/help";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Image, Keyboard, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View, } from "react-native";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL || "https://your-api-endpoint";
 
 export default function ReportProblem(){
  const [fontsLoaded] = useFonts({
@@ -17,28 +17,33 @@ export default function ReportProblem(){
 
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { user } = useAuth();
 
   if (!fontsLoaded) return null;
 
   const handleSubmit = async () => {
     if (!message.trim()) {
-      Alert.alert("Error", "Please enter your message before submitting.");
+      setError("Please enter your message before submitting.");
       return;
-    } //ajouter un jasoj 
+    } 
 
     setLoading(true);
     try {
-      const response = await axios.post(`${API_URL}/user/report`, { message });
+      const formData = new FormData();
+      formData.append("id", user?.uid || "");
+      formData.append("role", "10");
+      formData.append("body", message);
 
-      if (response.status === 200) {
-        Alert.alert("Success", "Your report has been sent. Thank you!");
-        setMessage("");
+      const response = await SendHelp(formData);
+      setError(null);
+      Alert.alert(
+        "Success",
+        "Your message has been sent successfully.",
+        );
         router.back();
-      } else {
-        Alert.alert("Error", "Failed to send report.");
-      }
     } catch (error) {
-      console.error("Error sending report:", error);
+      console.log("Error sending report:", error);
       Alert.alert("Error", "Something went wrong.");
     } finally {
       setLoading(false);

@@ -67,7 +67,7 @@ export default function ChangeEmail(){
         seterror("This email address is already taken.");
         return;
       }
-      console.error("Error updating email:", error);
+      console.log("Error updating email:", error);
       Alert.alert("Error", "Could not update email.");
     } finally {
       setLoading(false);

@@ -102,7 +102,7 @@ const SignIn = () => {
                 weight: response.data.result.weight,
                 phonenumber: response.data.result.phonenumber,
                 postalcode: response.data.result.postalcode,
-                address: response.data.result.adress,
+                address: response.data.result.address,
                 birthdate: response.data.result.birthdate,
                 pdp: response.data.result.pdp,
               }
