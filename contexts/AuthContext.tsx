@@ -14,6 +14,9 @@ type User = {
   address: string;
   birthdate:string;
   pdp: string;
+  car: boolean;
+  watch: boolean;
+  cgm:boolean;
 };
 
 type AuthContextType = {

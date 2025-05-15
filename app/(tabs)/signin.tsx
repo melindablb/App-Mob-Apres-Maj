@@ -84,6 +84,9 @@ const SignIn = () => {
                 address: response.data.result.address,
                 birthdate: response.data.result.birthdate,
                 pdp: response.data.result.pdp,
+                car: false,
+                watch: false,
+                cgm: false,
               }
               signInD(userD);
               router.replace("./patient/menubar/dashboard");
@@ -105,6 +108,9 @@ const SignIn = () => {
                 address: response.data.result.address,
                 birthdate: response.data.result.birthdate,
                 pdp: response.data.result.pdp,
+                car: false,
+                watch: false,
+                cgm: false,
               }
               signInD(userD);
               router.replace("./healthcarepro/menubar/dashboard");

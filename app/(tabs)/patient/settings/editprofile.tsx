@@ -211,6 +211,9 @@ useEffect(() => {
         address: user?.address|| "",
         birthdate: user?.birthdate || "",
         pdp : response.data, 
+        car: user?.car || false,
+        watch: user?.watch || false,
+        cgm: user?.cgm || false, 
       }
       console.log("datamaj",datamaj)
       UpdateData(datamaj)
@@ -246,6 +249,9 @@ useEffect(() => {
         address: user?.address|| "",
         birthdate: user?.birthdate || "",
         pdp : icons.avatar, 
+        car: user?.car || false,
+        watch: user?.watch || false,
+        cgm: user?.cgm || false, 
       }
       UpdateData(datamaj)
       setModalVisible(false);
@@ -305,6 +311,9 @@ useEffect(() => {
         address: response.data.newaddresspatient,
         birthdate: user?.birthdate || "",
         pdp : user?.pdp || "",        
+        car: user?.car || false,
+        watch: user?.watch || false,
+        cgm: user?.cgm || false, 
       }
       UpdateData(userupd);
       setFirstName(user?.name || "");

@@ -206,12 +206,12 @@ const [pdp,setpdp]=useState<any>(null)
 useEffect(() => {
   if(user?.pdp){
     setpdp(user.pdp);
-    console.log("ici")
+    
   }
   else{
-    console.log("la")
+    
     setpdp(require("../../../../assets/icons/avatar.png"));
-    console.log(pdp)
+    //console.log(pdp)
   }
 }),[user?.pdp];
 
@@ -227,6 +227,58 @@ useEffect(() => {
     router.push("../alert");
   }
 }, [currentIndex]);
+
+//couleurs
+const [coulCGM, setCoulCGM] = useState("#9C9C9C");
+const [coulOBU, setCoulOBU] = useState("#9C9C9C");
+const [coulWatch, setCoulWatch] = useState("#9C9C9C");
+
+const [v1, setV1] = useState(false);
+const [v2, setV2] = useState(false);
+const [v3, setV3] = useState(false);
+
+useEffect(() => {
+  const checkWatch = async () => {
+    try {
+      const watch = await AsyncStorage.getItem('watch');
+      if (watch === '1') {
+        setCoulWatch('#49a551');
+      } else {
+        setCoulWatch('#e52c2c');
+      }
+    } catch (error) {
+      console.log('Erreur de lecture AsyncStorage:', error);
+      setCoulWatch('#e52c2c'); // fallback en cas d'erreur
+    }
+    finally{
+      setV2(false);
+    }
+  };
+
+  checkWatch();
+}, [v2]);
+
+useEffect(() => {
+  const checkCGM = async () => {
+    try {
+      const CGM = await AsyncStorage.getItem('CGM');
+      if (CGM === '1') {
+        setCoulCGM('#49a551');
+      } else {
+        setCoulCGM('#e52c2c');
+      }
+    } catch (error) {
+      console.log('Erreur de lecture AsyncStorage:', error);
+      setCoulCGM('#e52c2c'); // fallback en cas d'erreur
+    }
+    finally{
+      setV3(false);
+    }
+  };
+
+  checkCGM();
+}, [v3]);
+
 
   return(
     
@@ -267,20 +319,16 @@ useEffect(() => {
             
                       <View style={styles.overlayContentAlt}>
                       <Watch />
-            
-                      <View style={{flexDirection:"row", gap:"4%"}}>
-                      <TouchableOpacity style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Connect{"\n"}Old Gen</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Connect{"\n"}New Gen</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setShowOverlay2(false)} style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold"}}>Close</Text>
+                      <View style={{width:"40%",}}>
+                        <TouchableOpacity onPress={() => {setShowOverlay2(false)
+                          setV2(true);
+                        }} style={styles.closeButton}>
+                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold", fontSize:17,textAlign:"center"}}>Close</Text>
                         </TouchableOpacity>
                         </View>
+                        </View>
                       </View>
-                    </View>
+                    
                   )}
           {showOverlay3 && (
                     <View style={[StyleSheet.absoluteFill,{zIndex:5}]}>
@@ -288,12 +336,11 @@ useEffect(() => {
             
                       <View style={styles.overlayContentAlt}>
                       <CGM />  
-                      <View style={{flexDirection:"row", gap:"5%"}}>
-                      <TouchableOpacity style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Connect</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setShowOverlay3(false)} style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Close</Text>
+                      <View style={{width:"40%",}}>
+                        <TouchableOpacity onPress={() => {setShowOverlay3(false)
+                          setV3(true);
+                        }} style={styles.closeButton}>
+                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold", fontSize:17,textAlign:"center"}}>Close</Text>
                         </TouchableOpacity>
                         </View>
                       </View>
@@ -353,7 +400,7 @@ useEffect(() => {
             <View style={{
               width:17,
               height:17,
-              backgroundColor:"#49A551",
+              backgroundColor:coulOBU, //TODO:
               borderRadius: 50,
               position:"absolute",
               left:"10%",
@@ -372,7 +419,7 @@ useEffect(() => {
             <View style={{
               width:17,
               height:17,
-              backgroundColor:"#49A551",
+              backgroundColor:coulWatch, 
               borderRadius: 50,
               position:"absolute",
               left:"10%",
@@ -391,7 +438,7 @@ useEffect(() => {
             <View style={{
               width:17,
               height:17,
-              backgroundColor:"#E52C2C",
+              backgroundColor:coulCGM, 
               borderRadius: 50,
               position:"absolute",
               left:"10%",
@@ -625,20 +672,20 @@ overlayContent: {
 },
 closeButton: {
   marginTop: 0,
-  backgroundColor: '#F05050',
+  backgroundColor: '#a3a3a3',
   padding: 10,
   borderRadius: 10,
   justifyContent:"center"
 },
 overlayContentAlt:{
   position: 'absolute',
-  top: '40%',
+  top: '35%',
   alignSelf: 'center',
   backgroundColor: 'rgba(255,255,255,1)',
   padding: 25,
-  borderRadius: 30,
+  borderRadius: 20,
   alignItems: 'center',
-  width:"75%",
+  width:"86%",
   zIndex:5,
   borderWidth:2,
   borderColor:"#9C9C9C"

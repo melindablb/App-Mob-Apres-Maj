@@ -252,12 +252,12 @@ export default function MedicalRec() {
         image: image as ImageValue,
       }
 
-      console.log("ici")
+      
       console.log("Adding new medical record:", newRecord)
 
       
       try {
-        console.log("la")
+        
         console.log("Attempting to add medical record to API")
         const formData = new FormData();
         if (user?.uid) {

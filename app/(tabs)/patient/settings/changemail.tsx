@@ -53,7 +53,10 @@ export default function ChangeEmail(){
         postalcode: user?.postalcode || "",
         address: user?.address || "",
         birthdate: user?.birthdate || "",
-        pdp : user?.pdp || "",        
+        pdp : user?.pdp || "",
+        car: user?.car || false,
+        watch: user?.watch || false,
+        cgm: user?.cgm || false,        
       }
       setEmail(newmail);
       UpdateData(userupd);
