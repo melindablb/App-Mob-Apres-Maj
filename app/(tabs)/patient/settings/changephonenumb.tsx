@@ -60,6 +60,7 @@ export default function ChangePhone(){
         car: user?.car || false,
         watch: user?.watch || false,
         cgm: user?.cgm || false,   
+        state: user?.state || 0,
       }
       setphonenumb(phoneNumber);
       UpdateData(userupd);

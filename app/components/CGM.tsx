@@ -5,13 +5,16 @@ import { useFonts } from "expo-font";
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
+
 const Watch = () => {
+
         const [fontsLoaded] = useFonts({
                     "Montserrat-Thin": require("../../assets/fonts/Montserrat/static/Montserrat-Thin.ttf"),
                     "Montserrat-Regular": require("../../assets/fonts/Montserrat/static/Montserrat-Regular.ttf"),
                     "Montserrat-SemiBold": require("../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf"),
                     "Montserrat-Medium": require("../../assets/fonts/Montserrat/static/Montserrat-Medium.ttf"),
                   });
+
 
         const { user } = useAuth();
         const [state, setState] = React.useState("Disconnected");

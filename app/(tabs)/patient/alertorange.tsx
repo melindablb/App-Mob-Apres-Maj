@@ -1,16 +1,17 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { AlerteWatch } from '@/services3/AlerteWatch';
+import { AlerteDiabete } from '@/services3/AlerteDiabete';
 import { useFocusEffect } from '@react-navigation/native';
 import { useFonts } from "expo-font";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-const Alert = () =>{
+const AlertOrange = () =>{
     
-  const { lat, long } = useLocalSearchParams();
-  const {user} = useAuth();
 
+    const { reason, lat, long } = useLocalSearchParams();
+    
+    const { user } = useAuth();
     const [canceled, setcanceled] = useState(false);
     const router = useRouter();
 
@@ -65,15 +66,17 @@ const Alert = () =>{
 // retours vers dashboard s il reste 0 sec
 
 useEffect(() => {
-  const sendalert = async () => {
+    const handletimeout = async () => {
   if (secondsLeft === 0) {
+    //TODO: env de l alerte diabete
     const formdata = new FormData();
-    formdata.append("IdPatientt",user?.uid || "" );
+    formdata.append("idPatientt", user?.uid || "");
+    formdata.append("raison", Array.isArray(reason) ? reason[0] : reason ?? "");
     formdata.append("latitude", Array.isArray(lat) ? lat[0] : lat ?? "");
     formdata.append("longitude", Array.isArray(long) ? long[0] : long ?? "");
     try{
-      const result = await AlerteWatch(formdata);
-      console.log(result.data);
+        const result = await AlerteDiabete(formdata);
+        console.log(result.data);
     }
     catch(error){
       console.log(error);
@@ -81,7 +84,7 @@ useEffect(() => {
     router.back();
   }
 }
-sendalert();
+handletimeout();
 }, [secondsLeft]);
 
     return(
@@ -90,19 +93,19 @@ sendalert();
         <View style={styles.title}>
             <Text style={styles.text}>
             <Text style={{fontSize:40}}>ALERT{"\n"}</Text>
-            <Text style={{fontSize:20}}>CRITICAL ANOMALY{"\n"}</Text>
+            <Text style={{fontSize:20}}>MODERATE ANOMALY{"\n"}</Text>
             <Text style={{color:"white",fontFamily:"Montserrat-SemiBold",fontSize:25,textAlign:"center",alignSelf:"center"}}>{time}</Text>
             </Text>
         </View>    
         
         <View style={styles.message}>
-        <Text style={{textAlign:"center",fontSize:25,color:"white",fontFamily:"Montserrat-Medium"}}>Help is on the way.{"\n"}If someone can drive you, please cancel the ride. Either way, stop moving and stay in place.</Text>
+        <Text style={{textAlign:"center",fontSize:25,color:"white",fontFamily:"Montserrat-Medium"}}>We are currently locating an available healthcare professional. You will receive a call shortly.{"\n"}If everything's okay now, feel free to cancel the alert.</Text>
         </View>
         <TouchableOpacity style={styles.cancelbutton} activeOpacity={0.8} onPress={()=>{
             setcanceled(true)
             router.back()
         }}>
-            <Text style={{fontFamily:"Montserrat-SemiBold",fontSize:25,color:"#F05050"}}>Cancel Help</Text>
+            <Text style={{fontFamily:"Montserrat-SemiBold",fontSize:25,color:"#E68333"}}>Cancel Help</Text>
         </TouchableOpacity>
         <Text style={{marginTop:"2%",fontSize:17,color:"white",fontFamily:"Montserrat-Regular"}}>Time left to cancel: {secondsLeft}s</Text>
     </View>
@@ -112,7 +115,7 @@ sendalert();
 const styles = StyleSheet.create({
 container:{
     flex:1,
-    backgroundColor:"#F05050",
+    backgroundColor:"#E68333",
     alignItems:"center"
 },
 text:{
@@ -128,7 +131,7 @@ title:{
     width:260,
     height:260,
     borderRadius:9999,
-    backgroundColor:"#F05050",
+    backgroundColor:"#E68333",
     borderColor:"white",
     borderWidth:7,
     boxShadow: "2px 3px 7px rgba(0, 0, 0, 0.35)",
@@ -151,4 +154,4 @@ cancelbutton:{
 },
 });
 
-export default Alert;
+export default AlertOrange;

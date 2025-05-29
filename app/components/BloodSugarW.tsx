@@ -1,16 +1,47 @@
-import {View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, Platform} from 'react-native';
+import { HubConnectionBuilder, LogLevel } from "@microsoft/signalr";
 import React, { useEffect, useState } from 'react';
-import images from '../../constants/images';
+import { Image, Text, View } from 'react-native';
 import icons from '../../constants/icons';
-import { useFonts } from "expo-font";
-import MapView, { Marker, PROVIDER_DEFAULT, UrlTile } from "react-native-maps"
-import * as Location from "expo-location"
-import { SafeAreaView } from "react-native-safe-area-context"
-import { MaterialIcons } from "@expo/vector-icons"
-import Svg, { Circle } from 'react-native-svg';
-import { PercentageCircle } from '../(tabs)/PercentageCircle';
 
 const BloodSugarW = () => {
+
+   const [activer,setactiver] = useState(false);
+      const [connexion, setConnexion] = useState<any>(null);
+      const [gly, setgly] = useState(0);
+  
+      useEffect (() => {
+          //if (activer) {
+            
+    const newconnexion = new HubConnectionBuilder()
+        .withUrl("http://192.168.1.102:5003/valeurtempsreelglycemie")
+        .configureLogging(LogLevel.Information)
+        .withAutomaticReconnect()
+        .build();
+    
+        setConnexion(newconnexion);
+      //}
+      //else {
+          //return;
+      //}
+      },[activer]);
+      
+      useEffect(() => {
+          if (connexion) {
+              connexion.start()
+                .then(() => {
+                  console.log("Connected to SignalR");
+                  connexion.on("ReceiveGlycemia", (value:any) => {
+                    setgly(value);
+                  });
+                  connexion.invoke("StartSimulation", "true","62DD9EA0-8AB5-47EF-9663-B958AE427E17","3.18291","36.72615");
+                })
+                .catch((error: any) => {
+                  console.log("SignalR Connection Error: ", error);
+                });
+            }
+          }, [connexion]);
+
+
     return(
         <View>
         <Text style={{
@@ -28,8 +59,8 @@ const BloodSugarW = () => {
           marginLeft:"30%",
           marginTop:"-30%",
         }}>
-        <Text style={{color:"#F05050"}}>80</Text>
-        <Text style={{color:"black"}}>{"\n"}mg/dL</Text>
+        <Text style={{color:"#F05050"}}>{gly.toString().slice(0, 4)}</Text>
+       <Text style={{color:"black"}}>{"\n"}mg/dL</Text>
         </Text>
         </View>
     );

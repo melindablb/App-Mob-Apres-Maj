@@ -1,11 +1,11 @@
+import { MaterialIcons } from "@expo/vector-icons"
+import { useFonts } from "expo-font"
+import * as Location from "expo-location"
 import type React from "react"
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native"
+import { useEffect, useRef, useState } from "react"
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 import MapView, { Marker, PROVIDER_DEFAULT, UrlTile } from "react-native-maps"
 import type { GeoLocation } from "../types/types"
-import * as Location from "expo-location"
-import { useFonts } from "expo-font"
-import { MaterialIcons } from "@expo/vector-icons"
-import { useRef,useEffect , useState} from "react"
 
 interface PatientMapViewProps {
   location: GeoLocation

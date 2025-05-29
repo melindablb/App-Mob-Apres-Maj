@@ -94,8 +94,8 @@ const Watch = () => {
                 <Text style={{textAlign:"left"}}>
                 <Text style={styles.props}>Link Status: </Text>   
                 <Text style={styles.data}>{state}{"\n"}</Text> 
-                <Text style={styles.props}>IP Adress: </Text>
-                <Text style={styles.data}>{ipAdd}{"\n"}</Text> 
+                {/*<Text style={styles.props}>IP Adress: </Text>
+                <Text style={styles.data}>{ipAdd}{"\n"}</Text> */}
                 <Text style={styles.props}>MAC Adress: </Text> 
                 <Text style={styles.data}>{macAdd}{"\n"}</Text> 
                 </Text>

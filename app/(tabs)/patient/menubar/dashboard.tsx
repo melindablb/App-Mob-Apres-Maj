@@ -1,10 +1,6 @@
-import BloodPressureW from '@/app/components/BloodPressureW';
-import BloodSugarW from '@/app/components/BloodSugarW';
 import CGM from '@/app/components/CGM';
-import HeartRateW from '@/app/components/HeartRateW';
 import NoDataW from '@/app/components/NoDataW';
 import OBU from '@/app/components/OBU';
-import OxSaturationW from '@/app/components/OxSaturationW';
 import Watch from '@/app/components/Watch';
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,23 +9,16 @@ import { useFonts } from "expo-font";
 import * as Location from "expo-location";
 import { useRouter } from 'expo-router';
 import React, { JSX, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, PROVIDER_DEFAULT, UrlTile } from "react-native-maps";
 import icons from '../../../../constants/icons';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { PercentageCircle } from '../PercentageCircle';
 import DualRadioSelector from '../radiobuttons';
 
 
-
-
-const widgetComponents: Record<string, JSX.Element> = {
-  'Heart Rate': <HeartRateW />,
-  'O2 Saturation': <OxSaturationW />,
-  'Blood Sugar': <BloodSugarW />,
-  'Blood Pressure': <BloodPressureW />,
-};
-
 const dashboard = () => {
+  
 
   const [fontsLoaded] = useFonts({
         "Montserrat-Thin": require("../../../../assets/fonts/Montserrat/static/Montserrat-Thin.ttf"),
@@ -46,11 +35,11 @@ const dashboard = () => {
   ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  
-  const handlePress = () => {
+  const [montrer,setmontrer]=useState(false);
+ /* const handlePress = () => {
     const nextIndex = (currentIndex + 1) % stateText.length;
     setCurrentIndex(nextIndex);
-  };
+  };*/
 
   const anomaly = stateText[currentIndex];
 
@@ -166,6 +155,226 @@ const dashboard = () => {
   }
 
 {/*widget data */}
+////////////////////////////////////////////////////////////////////////////////////////////////
+//blood sugar
+const [raison,setraison]=useState("");
+// ecran alert
+useEffect(() => {
+  if (currentIndex === 2) {
+    router.push({pathname: "../alert", params:{lat:location?.coords.latitude, long:location?.coords.longitude}});
+  }
+  if (currentIndex === 1) {
+    router.push({pathname: "../alertorange", params:{reason:raison, lat:location?.coords.latitude, long:location?.coords.longitude} });
+  }
+}, [currentIndex]);
+
+  const [gly, setGly] = useState(1.3);
+  const [hyper, setHyper] = useState<boolean | null>(false);
+  const [hypo, setHypo] = useState<boolean | null>(false);
+  const intervalRef = useRef<number | null>(null);
+
+
+  const handlehyper = () => setHyper(!hyper);
+  const handlehypo = () => setHypo(!hypo);
+
+  useEffect(() => {
+    intervalRef.current = setInterval(() => {
+      setGly((prev) => {
+        if (hyper === true) {
+          setraison("hyper");
+          setCurrentIndex(1);
+          return 3.01;}
+        if (hypo === true) {
+          setraison("hypo");
+          setCurrentIndex(1);
+          return 0.43;}
+
+        if (prev > 0.63) return prev - 0.1;
+        return prev + 0.3;
+      });
+    }, 2000);
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [hyper, hypo]);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//heart rate
+const [avc,setavc] = useState(false)
+
+const handleavc = () => setavc(!avc);
+
+useEffect(() => {
+  if (avc === true) {
+    setCurrentIndex(2)
+  }
+}, [avc]);
+
+const [heartRate, setHeartRate] = useState(75); 
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setHeartRate((prev) => {
+      const variation = Math.floor(Math.random() * 5) - 2; 
+      let newRate = prev + variation;
+
+      
+      if (newRate < 61) newRate = 61;
+      if (newRate > 100) newRate = 100;
+
+      return newRate;
+    });
+  }, 1000); 
+
+  return () => clearInterval(interval);
+}, []);
+/////////////////////////////////////////////////////////////////////////////////////
+//pression arterielle
+const [systolic, setSystolic] = useState(120); 
+  const [diastolic, setDiastolic] = useState(80); 
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSystolic((prev) => {
+        const variation = Math.floor(Math.random() * 5) - 2; 
+        let newVal = prev + variation;
+        if (newVal < 100) newVal = 100;
+        if (newVal > 130) newVal = 130;
+        return newVal;
+      });
+
+      setDiastolic((prev) => {
+        const variation = Math.floor(Math.random() * 5) - 2; 
+        let newVal = prev + variation;
+        if (newVal < 60) newVal = 60;
+        if (newVal > 90) newVal = 90;
+        return newVal;
+      });
+    }, 1000); 
+
+    return () => clearInterval(interval);
+  }, []);
+////////////////////////////////////////////////////////////////////////
+//o2 saturation
+const [spo2, setSpo2] = useState(98); // valeur de départ
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSpo2((prev) => {
+        const variation = Math.floor(Math.random() * 3) - 1; // -1, 0 ou +1
+        let newVal = prev + variation;
+        if (newVal < 95) newVal = 95;
+        if (newVal > 100) newVal = 100;
+        return newVal;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+//////////////////////////7
+const widgetComponents: Record<string, JSX.Element> = {
+  'Heart Rate': 
+  <View style={{}}>
+  <Text style={{
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 20,
+    color: "#000000",
+    textAlign: "center",
+    marginTop:"5%",
+  }}>Heart Rate</Text>
+  <Text style={{
+    fontFamily: "Montserrat-SemiBold",
+    fontSize: 20,
+    textAlign: "center",
+    marginLeft:"-50%",
+    marginTop:"8%",
+  }}>
+    <Text style={{color:"#F05050"}}>{heartRate}</Text>
+    <Text style={{color:"black"}}>{"\n"}BPM</Text>
+    </Text>
+  <Image source={icons.ECG} style={{
+  width:"50%",
+  height:"50%",
+  marginTop:"-28%",
+  marginLeft:"45%",
+  }}/>
+  </View>,
+
+  'O2 Saturation': 
+    <View style={{alignItems:"center"}}>
+          <Text style={{
+                    fontFamily: "Montserrat-SemiBold",
+                    fontSize: 20,
+                    color: "#000000",
+                    textAlign: "center",
+                    marginTop:"5%",
+                    marginBottom:"2%"
+                  }}>O2 Saturation</Text>
+                  <PercentageCircle 
+                  percentage={spo2}
+                  radius={35}
+                  strokeWidth={6}
+                  color="#F05050"
+                  textSize={18}
+                />
+          </View>,
+
+  'Blood Sugar':  <View>
+                  <Text style={{
+                  fontFamily: "Montserrat-SemiBold",
+                  fontSize: 20,
+                  color: "#000000",
+                  textAlign: "center",
+                  marginTop:"5%",
+                }}>Blood Sugar</Text>
+                <Image source={icons.blood} style={{width:"32%",height:"57%", marginTop:"5%",marginLeft:"8%"}}/>
+                <Text style={{
+                  fontFamily: "Montserrat-SemiBold",
+                  fontSize: 20,
+                  textAlign: "center",
+                  marginLeft:"30%",
+                  marginTop:"-30%",
+                }}>
+                <Text style={{color:"#F05050"}}>{gly.toString().slice(0,4)}</Text>
+              <Text style={{color:"black"}}>{"\n"}mg/dL</Text>
+                </Text>
+                </View>,
+
+  'Blood Pressure': <View>
+          <Text style={{
+                    fontFamily: "Montserrat-SemiBold",
+                    fontSize: 20,
+                    color: "#000000",
+                    textAlign: "center",
+                    marginTop:"5%",
+                  }}>Blood Pressure</Text>
+                  <Text style={{
+                    fontFamily:"MontSerrat-SemiBold",
+                    fontSize:20,
+                    textAlign:"center",
+                    marginHorizontal:"5%",
+                    marginTop:"5%"
+                  }}>
+                  <Text style={{color:"#F05050",fontSize:23}} >Sys </Text>
+                  <Text>{systolic} </Text>
+                  <Text style={{fontSize:14}}>mmHg</Text>
+                  </Text>
+                  <Text style={{
+                    fontFamily:"MontSerrat-SemiBold",
+                    fontSize:20,
+                    textAlign:"center",
+                    marginHorizontal:"5%",
+                    marginTop:"1%"
+                  }}>
+                  <Text style={{color:"#F05050", fontSize:23}}>Dia </Text>
+                  <Text>{diastolic} </Text>
+                  <Text style={{fontSize:14}}>mmHg</Text>
+                  </Text>
+                   </View>,
+};
+
 const [showOverlay, setShowOverlay] = useState(false);
 
 const [selectedWidgets, setSelectedWidgets] = useState<string[]>(["Heart Rate", "O2 Saturation"])
@@ -219,14 +428,8 @@ useEffect(() => {
 const [showOverlay1, setShowOverlay1] = useState(false);
 const [showOverlay2, setShowOverlay2] = useState(false);
 const [showOverlay3, setShowOverlay3] = useState(false);
-
-// ecran alert
 const router = useRouter();
-useEffect(() => {
-  if (currentIndex === 2) {
-    router.push("../alert");
-  }
-}, [currentIndex]);
+
 
 //couleurs
 const [coulCGM, setCoulCGM] = useState("#9C9C9C");
@@ -279,6 +482,28 @@ useEffect(() => {
   checkCGM();
 }, [v3]);
 
+useEffect(() => {
+  const checkOBU = async () => {
+    try {
+      const OBU = await AsyncStorage.getItem('OBU');
+      if (OBU === '1') {
+        setCoulOBU('#49a551');
+      } else {
+        setCoulOBU('#e52c2c');
+      }
+    } 
+    catch (error) {
+      console.log('Erreur de lecture AsyncStorage:', error);
+      setCoulOBU('#e52c2c'); // fallback en cas d'erreur
+    }
+    finally{
+      setV1(false);
+    }
+  };
+
+  checkOBU();
+}, [v1]);
+
 
   return(
     
@@ -301,15 +526,14 @@ useEffect(() => {
                       <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
             
                       <View style={styles.overlayContentAlt}>
-                      <OBU />
-                      <View style={{flexDirection:"row", gap:"5%"}}>
-                      <TouchableOpacity style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Connect</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setShowOverlay1(false)} style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold" }}>Close</Text>
-                        </TouchableOpacity>
-                        </View>
+                          <OBU />
+                            <View style={{width:"40%",}}>
+                              <TouchableOpacity onPress={() => {setShowOverlay1(false)
+                                setV1(true);
+                                }} style={styles.closeButton}>
+                                <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold", fontSize:17,textAlign:"center"}}>Close</Text>
+                              </TouchableOpacity>
+                            </View>
                       </View>
                     </View>
                   )}
@@ -318,15 +542,15 @@ useEffect(() => {
                       <BlurView intensity={40} tint="dark" style={StyleSheet.absoluteFill} />
             
                       <View style={styles.overlayContentAlt}>
-                      <Watch />
-                      <View style={{width:"40%",}}>
-                        <TouchableOpacity onPress={() => {setShowOverlay2(false)
-                          setV2(true);
-                        }} style={styles.closeButton}>
-                          <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold", fontSize:17,textAlign:"center"}}>Close</Text>
-                        </TouchableOpacity>
-                        </View>
-                        </View>
+                          <Watch />
+                            <View style={{width:"40%",}}>
+                              <TouchableOpacity onPress={() => {setShowOverlay2(false)
+                                setV2(true);
+                                }} style={styles.closeButton}>
+                                <Text style={{ color: 'white',  fontFamily:"Montserrat-SemiBold", fontSize:17,textAlign:"center"}}>Close</Text>
+                              </TouchableOpacity>
+                            </View>
+                      </View>
                       </View>
                     
                   )}
@@ -360,11 +584,23 @@ useEffect(() => {
               fontFamily: "Montserrat-SemiBold",
               }}>{user?.name} {user?.lastname}</Text>
           </View>
+          {montrer && (
+            <View style={{gap:5}}>
+          <View style={{marginTop:10, flexDirection:"row",gap:8}}>
+          <TouchableOpacity onPress={handlehyper} style={{height:20,width:30,borderRadius:1000,backgroundColor:hyper ? "#B3FFB3":"#FFB3B3",alignItems:"center",justifyContent: "center"}}><Text style={{color:"white", fontWeight:"bold",fontSize:17, alignSelf:"center"}}>+</Text></TouchableOpacity>
+          <TouchableOpacity onPress={handlehypo} style={{height:20,width:30,borderRadius:1000,backgroundColor:hypo ?"#B3FFB3" :"#B3D9FF",alignItems:"center",justifyContent: "center"}}><Text style={{color:"white", fontWeight:"bold",fontSize:17, alignSelf:"center"}}>-</Text></TouchableOpacity>
+          <TouchableOpacity onPress={handleavc} style={{height:20,width:30,borderRadius:1000,backgroundColor:avc ?"#B3FFB3" :"#FFF9C4",alignItems:"center",justifyContent: "center"}}><Text style={{color:"white", fontWeight:"bold",fontSize:17, alignSelf:"center"}}>H</Text></TouchableOpacity>
+          </View>
+          <TouchableOpacity onPress={()=>setCurrentIndex(0)} style={{height:20,width:30,borderRadius:1000,backgroundColor:"#B3FFB3",alignItems:"center",justifyContent: "center"}}/>
+            </View>
+          )}
+          <Pressable onPress={() => router.push('../notification')}>
           <View style={styles.headerR}>
           <Ionicons name="notifications" size={25} color="#F05050" style={styles.notificationIcon} />
             </View>
+            </Pressable>
           </View>
-          <TouchableOpacity style={styles.state} onPress={handlePress} activeOpacity={0.7}>
+          <TouchableOpacity style={styles.state} onPress={()=>setmontrer(!montrer)} activeOpacity={1}>
           <View style={{flexDirection: 'row',}}>
             <View style={{ flex: 1, 
                   justifyContent: 'center',
@@ -457,7 +693,7 @@ useEffect(() => {
           <View style={styles.total}>
             <Text style={{
               fontSize: 20,
-              color:"#353432",
+              color:"black",
               fontFamily: "Montserrat-SemiBold",
               textAlign:"left",
               marginLeft:"3%"
@@ -467,7 +703,7 @@ useEffect(() => {
               </Text>
             <Text style={{
               fontSize: 20,
-              color:"#353432",
+              color:"black",
               fontFamily: "Montserrat-SemiBold",
               textAlign:"right",
             }}>

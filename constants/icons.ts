@@ -32,6 +32,7 @@ const icons = {
     edit: require('../assets/icons/edit.png'),
     problem: require('../assets/icons/problem.png'),
     tel: require('../assets/icons/tel.png'),
+    alert : require('../assets/icons/alert.png'),
 };
 
 export default icons

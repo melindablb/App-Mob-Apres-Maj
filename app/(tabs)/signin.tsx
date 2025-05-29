@@ -87,6 +87,7 @@ const SignIn = () => {
                 car: false,
                 watch: false,
                 cgm: false,
+                state: response.data.result.stateColor,
               }
               signInD(userD);
               router.replace("./patient/menubar/dashboard");
@@ -111,6 +112,7 @@ const SignIn = () => {
                 car: false,
                 watch: false,
                 cgm: false,
+                state: 0,
               }
               signInD(userD);
               router.replace("./healthcarepro/menubar/dashboard");

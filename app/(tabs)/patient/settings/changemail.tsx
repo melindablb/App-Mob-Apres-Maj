@@ -56,7 +56,8 @@ export default function ChangeEmail(){
         pdp : user?.pdp || "",
         car: user?.car || false,
         watch: user?.watch || false,
-        cgm: user?.cgm || false,        
+        cgm: user?.cgm || false,  
+        state: user?.state || 0,      
       }
       setEmail(newmail);
       UpdateData(userupd);

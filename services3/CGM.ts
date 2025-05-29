@@ -23,4 +23,12 @@ export const GetStateCGM = (data : FormData) => {
           'Content-Type': 'multipart/form-data',
         },
       });
+};
+
+export const HubDataCGM = (data : FormData) => {
+    return api3.post('/Objectconnexion/hubdatacgm', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 }

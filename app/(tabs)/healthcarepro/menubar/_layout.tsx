@@ -47,6 +47,46 @@ export default function Layout(): JSX.Element {
           ),
         }}
       />
+
+<Tabs.Screen
+        name="med" 
+        options={{
+          title: "med",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <View style={styles.tabItemContainer}>
+              <Image
+                source={icons.alert}
+                style={[
+                  styles.tabIcon,
+                  focused ? styles.activeIcon : null, 
+                  focused ? styles.Container : null,  
+                ]}
+              />
+            </View>
+          ),
+        }}
+      />
+
+<Tabs.Screen
+        name="settings" 
+        options={{
+          title: "settings",
+          headerShown: false,
+          tabBarIcon: ({ focused }: { focused: boolean }) => (
+            <View style={styles.tabItemContainer}>
+              <Image
+                source={icons.settings}
+                style={[
+                  styles.tabIcon,
+                  focused ? styles.activeIcon : null, 
+                  focused ? styles.Container : null,  
+                ]}
+              />
+            </View>
+          ),
+        }}
+      />
     </Tabs>
   );
 }

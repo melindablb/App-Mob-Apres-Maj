@@ -25,5 +25,26 @@ export interface MedicalRecord {
     weight: number
     medicalRecords: MedicalRecord[]
   }
-  
+
+  export interface Pro {
+    id: string
+    firstName: string
+    lastName: string
+    age: number
+    position: string // Human-readable location description
+    location: GeoLocation // Geographic coordinates for mapping
+    phoneNumber: string
+    email: string
+    medicalRecords: MedicalRecord[]
+  }
+    
+  export interface Request {
+    id: string;
+    UID: string;
+    title: string;
+    description: string;
+    timestamp?: string;
+    patient: Patient; // <-- important !
+  }
+
   

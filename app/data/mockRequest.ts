@@ -1,0 +1,51 @@
+export const mockRequests = [
+    {
+      id: "req1",
+      UID: "patient1",
+      title: "Emergency - High Fever",
+      description: "Patient reported very high fever and dizziness.",
+      timestamp: "2023-10-01T12:00:00Z",
+      patient: {
+        id: "patient1",
+        firstName: "John",
+        lastName: "Doe",
+        age: 35,
+        bloodType: "O+",
+        location: {
+          latitude: 48.8566,
+          longitude: 2.3522,
+        },
+        position: "Conscious",
+        phoneNumber: "0601020304",
+        email: "john.doe@example.com",
+        height: 178,
+        weight: 75,
+        image: "https://via.placeholder.com/150",
+      },
+    },
+    {
+      id: "req2",
+      UID: "patient2",
+      title: "Low Blood Sugar",
+      description: "Diabetic patient needs urgent care.",
+      timestamp: "2025-10-01T12:00:00Z",
+      patient: {
+        id: "patient2",
+        firstName: "Alice",
+        lastName: "Martin",
+        age: 60,
+        bloodType: "A-",
+        location: {
+          latitude: 48.864716,
+          longitude: 2.349014,
+        },
+        position: "Unconscious",
+        phoneNumber: "0612345678",
+        email: "alice.martin@example.com",
+        height: 160,
+        weight: 60,
+        image: "https://via.placeholder.com/150",
+      },
+    },
+  ];
+  

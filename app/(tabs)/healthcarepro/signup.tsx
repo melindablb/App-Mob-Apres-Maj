@@ -1,23 +1,29 @@
-import { View, Text, ScrollView, Button ,Image, ImageBackground, TextInput, Pressable,TouchableOpacity,KeyboardAvoidingView,
-  Platform,
-  Alert,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard, Animated} from 'react-native'
-import React, { useState } from "react";
-import * as ImagePicker from 'expo-image-picker';
-import images from '../../../constants/images'
-import icons from '../../../constants/icons'
-import { Link, useRouter, useLocalSearchParams } from 'expo-router';
-import { useForm, Controller, useFormContext } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
-import { useFonts } from "expo-font";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
-import { DrawerItems } from 'react-navigation';
-import ImageController from "../image-controller";
-import { Double, Float } from 'react-native/Libraries/Types/CodegenTypes';
 import { signupProS } from '@/services/auth';
+import { Ionicons } from '@expo/vector-icons';
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useFonts } from "expo-font";
+import { useRouter } from 'expo-router';
+import React, { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import {
+  Alert,
+  Image,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+import * as yup from "yup";
+import icons from '../../../constants/icons';
+import images from '../../../constants/images';
+import ImageController from "../image-controller";
 
 interface ImageValue {
   uri: string
@@ -120,7 +126,7 @@ const schema = yup.object().shape(
 
 const SignUpM = () => {
 
-
+   const [isSecure,setIsSecure]=useState(true);
   const [validationResult, setValidationResult] = useState<{
       uri: string
       isValid: boolean
@@ -225,7 +231,7 @@ const SignUpM = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
   <ScrollView contentContainerStyle={{
       flex:1,
-      backgroundColor:"#FFFAF0",
+      backgroundColor:"white",
       alignItems:"center",
       minHeight: 1860,
       }}
@@ -287,7 +293,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -324,7 +330,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -360,7 +366,7 @@ const SignUpM = () => {
               <TouchableOpacity style={{
               width: 330,
               height: 45,
-              backgroundColor: "#FFFDF9",
+              backgroundColor: "WHITE",
               borderRadius: 17,
               borderWidth:1,
               borderColor:"#9C9C9C",
@@ -469,7 +475,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -507,7 +513,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -545,7 +551,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -583,7 +589,7 @@ const SignUpM = () => {
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -614,14 +620,14 @@ const SignUpM = () => {
               <TextInput
               placeholder="Password"
               placeholderTextColor="gray"
-              secureTextEntry
+              secureTextEntry={isSecure}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
               style={{
                   width: 330,
                   height: 45,
-                  backgroundColor: "#FFFDF9",
+                  backgroundColor: "WHITE",
                   borderRadius: 17,
                   borderWidth:1,
                   borderColor:"#9C9C9C",
@@ -638,6 +644,9 @@ const SignUpM = () => {
               />
           )}
       />
+  <TouchableOpacity style={{ position: 'absolute', top:825,right:60}} onPress={()=> setIsSecure(!isSecure)}>
+      <Ionicons name={isSecure ? 'eye-off' : 'eye'} size={24} color="gray" />
+      </TouchableOpacity>
       {errors.password && <Text style={{
               position: "absolute",
               top: 861,

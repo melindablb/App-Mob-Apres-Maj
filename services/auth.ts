@@ -31,7 +31,7 @@ export const signinProS = (data : FormData) => {
         'Content-Type': 'multipart/form-data',
       },
     });
-}
+};
 
 export const LogOut = (data : FormData) => {
     return api.post('/auth/Logout', data, {
@@ -39,4 +39,12 @@ export const LogOut = (data : FormData) => {
           'Content-Type': 'multipart/form-data',
         },
       });
-}
+};
+
+export const AddAdmin = (data : FormData) => {
+    return api.post('/auth/AddAdmin', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+};

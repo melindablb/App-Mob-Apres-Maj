@@ -1,15 +1,75 @@
 "use client"
-import { useFonts } from "expo-font"
-import type React from "react"
-import { useState } from "react"
-import { StyleSheet, Text, View, TouchableOpacity, Linking, Platform } from "react-native"
-import type { Patient } from "../types/types"
+import { useFonts } from "expo-font";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { Button, Linking, Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+
+
+export interface MedRec {
+  id: string;
+  label: string;
+  mailmed: string;
+  filepath: string;
+  date: string;
+}
+
+export interface Request {
+  id: string;
+  title: string;
+  timestamp: string;
+  patient :{
+  id: string;  
+  firstname: string;
+  lastname: string;
+  latitudepatient: string;
+  longitudepatient: string;
+  birthdate: string;
+  location:string;
+  phone: string;
+  email: string;
+  height: string;
+  weight: string;
+  }
+  medrec?: MedRec[] | null;
+}
+
+
 
 interface PatientDetailsProps {
-  patient: Patient
+  patient: Request
 }
 
 const PatientDetails: React.FC<PatientDetailsProps> = ({ patient }) => {
+
+  const [adresse, setAdresse] = useState<string | null>(null);
+
+  const getLocationName = async (latitude: number, longitude: number) => {
+    try {
+      const response = await fetch(
+        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`
+      );
+      const data = await response.json();
+      console.log("data ",data.locality)
+      setAdresse(data.locality+" "+data.principalSubdivision);
+      return {
+        city: data.locality,
+        region: data.principalSubdivision,
+        country: data.countryName
+      };
+    } catch (error) {
+      console.error("Erreur lors du reverse geocoding :", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    getLocationName(
+      parseFloat(patient.patient.latitudepatient), 
+      parseFloat(patient.patient.longitudepatient))
+  }, []);
+
+
+
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null)
 
   const toggleRecord = (recordId: string) => {
@@ -19,7 +79,15 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patient }) => {
       setExpandedRecord(recordId)
     }
   }
-
+  function formatDateToEnglish(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+ 
   const [fontsLoaded] = useFonts({
     "Montserrat-Thin": require("../../assets/fonts/Montserrat/static/Montserrat-Thin.ttf"),
     "Montserrat-Regular": require("../../assets/fonts/Montserrat/static/Montserrat-Regular.ttf"),
@@ -27,9 +95,18 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patient }) => {
     "Montserrat-Medium": require("../../assets/fonts/Montserrat/static/Montserrat-Medium.ttf"),
   });
 
-  const openMap = () => {
-    const { latitude, longitude } = patient.location
-    const label = `${patient.firstName} ${patient.lastName}'s Location`
+ 
+  const openURL = (url :any) => {
+    const partievalide = url.replace(/\\/g, "/");
+    Linking.
+    openURL
+    (`http://192.168.1.102:5001/${partievalide}`);
+  };
+
+ const openMap = () => {
+    const latitude = parseFloat(patient.patient.latitudepatient);
+    const longitude = parseFloat(patient.patient.longitudepatient);
+    const label = `${patient.patient.firstname} ${patient.patient.lastname}'s Location`
 
     // Different URL schemes for different platforms
     const url = Platform.select({
@@ -48,93 +125,97 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patient }) => {
     })
   }
 
+
   return (
     <View style={styles.container}>
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Patient Information</Text>
+      <Text style={styles.cardTitle}>Alert Reason:</Text>
+      <Text style={[styles.value, {fontSize: 16}]}>
+            {patient.title}
+          </Text>
+      </View>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Patient Information:</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Name:</Text>
           <Text style={styles.value}>
-            {patient.firstName} {patient.lastName}
+            {patient.patient.firstname} {patient.patient.lastname}
           </Text>
         </View>
 
         <View style={styles.infoRow}>
-          <Text style={styles.label}>Age:</Text>
-          <Text style={styles.value}>{patient.age}</Text>
+          <Text style={styles.label}>Birth Date:</Text>
+          <Text style={styles.value}>{formatDateToEnglish(patient.patient.birthdate)}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Location:</Text>
-          <Text style={styles.value}>{patient.position}</Text>
+          <Text style={styles.value}>{adresse}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Coordinates:</Text>
           <Text style={styles.value}>
-            {patient.location.latitude.toFixed(6)}, {patient.location.longitude.toFixed(6)}
+            Lat: {patient.patient.latitudepatient.slice(0,6)}, Long:{patient.patient.longitudepatient.slice(0,6)}
           </Text>
         </View>
 
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Contact Information</Text>
+        <Text style={styles.cardTitle}>Contact Information:</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Phone:</Text>
-          <Text style={styles.value}>{patient.phoneNumber}</Text>
+          <Text style={styles.value}>{patient.patient.phone}</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{patient.email}</Text>
+          <Text style={styles.value}>{patient.patient.email}</Text>
         </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Physical Attributes</Text>
+        <Text style={styles.cardTitle}>Physical Attributes:</Text>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Height:</Text>
-          <Text style={styles.value}>{patient.height} cm</Text>
+          <Text style={styles.value}>{patient.patient.height} cm</Text>
         </View>
 
         <View style={styles.infoRow}>
           <Text style={styles.label}>Weight:</Text>
-          <Text style={styles.value}>{patient.weight} kg</Text>
+          <Text style={styles.value}>{patient.patient.weight} kg</Text>
         </View>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Medical Records</Text>
-
-        {patient.medicalRecords.length > 0 ? (
-          patient.medicalRecords.map((record) => (
+        <Text style={styles.cardTitle}>Medical Records:</Text>
+        {Array.isArray(patient.medrec) && patient.medrec.length > 0 ? (
+          patient.medrec.map((record) => (
             <View key={record.id} style={styles.recordContainer}>
               <TouchableOpacity style={styles.recordHeader} onPress={() => toggleRecord(record.id)}>
-                <Text style={styles.recordTitle}>{record.title}</Text>
-                <Text style={styles.recordDate}>{record.date}</Text>
+                <Text style={styles.recordTitle}>{record.label}</Text>
+                <Text style={styles.recordDate}>{formatDateToEnglish(record.date)}</Text>
               </TouchableOpacity>
-
               {expandedRecord === record.id && (
                 <View style={styles.recordDetails}>
-                  <Text style={styles.recordDescription}>{record.description}</Text>
+                  <Button title="Open File On Navigator" onPress={()=>openURL(record.filepath)}/>
                   <View style={styles.recordMeta}>
-                    <Text style={styles.recordMetaText}>Doctor: {record.doctor}</Text>
-                    <Text style={styles.recordMetaText}>Medication: {record.medication}</Text>
+                    <Text style={styles.recordMetaText}>Doctor Email:  {record.mailmed}</Text>
                   </View>
                 </View>
               )}
             </View>
           ))
         ) : (
-          <Text style={styles.noRecords}>No medical records available</Text>
-        )}
-      </View>
+          <Text style={styles.noRecords}>No medical records available</Text>)}
+        </View>
     </View>
   )
+  
 }
 
 const styles = StyleSheet.create({

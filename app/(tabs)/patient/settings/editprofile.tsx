@@ -214,6 +214,7 @@ useEffect(() => {
         car: user?.car || false,
         watch: user?.watch || false,
         cgm: user?.cgm || false, 
+        state: user?.state || 0,
       }
       console.log("datamaj",datamaj)
       UpdateData(datamaj)
@@ -252,6 +253,7 @@ useEffect(() => {
         car: user?.car || false,
         watch: user?.watch || false,
         cgm: user?.cgm || false, 
+        state: user?.state || 0,
       }
       UpdateData(datamaj)
       setModalVisible(false);
@@ -314,6 +316,7 @@ useEffect(() => {
         car: user?.car || false,
         watch: user?.watch || false,
         cgm: user?.cgm || false, 
+        state: user?.state || 0,
       }
       UpdateData(userupd);
       setFirstName(user?.name || "");

@@ -36,7 +36,6 @@ interface MedicalRecord {
   id: string
   label: string
   emailmed: string
-  description:string
   validationStatus: "validated" | "rejected" | "pending"
   image: ImageValue
 }
@@ -219,11 +218,6 @@ export default function MedicalRec() {
       Alert.alert("Error", "Please enter both label and email")
       return
     }
-    if( description.trim() === "") {
-      console.log("Validation failed: empty description")
-      Alert.alert("Error", "Please enter a description")
-      return
-    }
     if (!imageUri) {
       console.log("Validation failed: no image selected")
       Alert.alert("Error", "Please select an image of the medical record")
@@ -246,7 +240,6 @@ export default function MedicalRec() {
       const newRecord: MedicalRecord = {
         id: Date.now().toString(),
         label,
-        description,
         emailmed,
         validationStatus: "pending", // Initial status is always pending
         image: image as ImageValue,
@@ -269,7 +262,6 @@ export default function MedicalRec() {
         }
 
         formData.append("Title", newRecord.label)
-        formData.append("Description", newRecord.description)
         formData.append("MailMedecin", newRecord.emailmed)
         formData.append("file", {
           uri: newRecord.image.uri,
@@ -285,7 +277,6 @@ export default function MedicalRec() {
         const newRecordtoADD : MedicalRecord ={
           id: response.data.idfdossier,
           label,
-          description,
           emailmed,
           validationStatus: "pending",
           image: image as ImageValue,
@@ -504,7 +495,6 @@ useEffect(() => {
                 <Ionicons name="close" size={24} color="#666" />
               </TouchableOpacity>
             </View>
-
             <View style={styles.formGroup}>
               <Text style={styles.label}>Record Label</Text>
               <TextInput
@@ -517,33 +507,6 @@ useEffect(() => {
                 placeholder="Enter record label"
                 editable={!isLoading}
               />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Description</Text>
-              
-              <TextInput
-                style={styles.input2}
-                value={description}
-                onChangeText={(text) => {
-                  const words = text.trim().split(/\s+/)
-                  if (words.length <= 30) {
-                    setdescription(text)
-                  } else {
-                    const limitedText = words.slice(0, 30).join(" ")
-                    setdescription(limitedText)
-                  }
-                }}
-                placeholder="Enter record description (max 30 words)"
-                multiline
-                editable={!isLoading}
-                textAlignVertical="top"
-              />
-              <Text style={{ textAlign: "right", color: "#888", marginTop: 4, fontSize: 12 }}>
-                {description.trim() === "" ? 0 : description.trim().split(/\s+/).length} / 30 words
-              </Text>
-
-              
             </View>
 
             <View style={styles.formGroup}>

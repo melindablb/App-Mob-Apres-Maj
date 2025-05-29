@@ -1,7 +1,7 @@
-import React from "react";
 import { Tabs } from "expo-router";
-import { View, Image, StyleSheet, TouchableOpacity } from "react-native";
-import  icons  from "../../../../constants/icons";
+import React, { JSX } from "react";
+import { Image, StyleSheet, View } from "react-native";
+import icons from "../../../../constants/icons";
 
 
 export default function Layout(): JSX.Element {

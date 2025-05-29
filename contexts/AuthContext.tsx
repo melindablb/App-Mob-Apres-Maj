@@ -17,6 +17,7 @@ type User = {
   car: boolean;
   watch: boolean;
   cgm:boolean;
+  state:number; //0vert 1orange 2rouge
 };
 
 type AuthContextType = {

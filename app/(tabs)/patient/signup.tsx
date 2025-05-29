@@ -1,5 +1,6 @@
 "use client"
 
+import { Ionicons } from "@expo/vector-icons"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { useFonts } from "expo-font"
 import { useRouter } from "expo-router"
@@ -112,6 +113,7 @@ const schema = yup.object().shape({
 })
 
 const SignUpP = () => {
+    const [isSecure,setIsSecure]=useState(true);
 
   const [validationResult, setValidationResult] = useState<{
     uri: string
@@ -764,7 +766,7 @@ const SignUpP = () => {
               <TextInput
                 placeholder="Password"
                 placeholderTextColor="gray"
-                secureTextEntry
+                secureTextEntry={isSecure}
                 onBlur={onBlur}
                 onChangeText={onChange}
                 value={value}
@@ -786,6 +788,9 @@ const SignUpP = () => {
               />
             )}
           />
+            <TouchableOpacity style={{ position: 'absolute', top:825,right:60}} onPress={()=> setIsSecure(!isSecure)}>
+      <Ionicons name={isSecure ? 'eye-off' : 'eye'} size={24} color="gray" />
+      </TouchableOpacity>
           {errors.password && (
             <Text
               style={{

@@ -7,17 +7,17 @@ import { useRouter } from "expo-router"
 import type React from "react"
 import { useRef, useState } from "react"
 import {
-    ActivityIndicator,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-    type NativeSyntheticEvent,
-    type TextInputKeyPressEventData
+  ActivityIndicator,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  type NativeSyntheticEvent,
+  type TextInputKeyPressEventData
 } from "react-native"
 
 export default function PasswordResetScreen(): React.ReactElement {
